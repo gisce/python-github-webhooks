@@ -144,55 +144,23 @@ def index():
     }
     logging.info('Metadata:\n{}'.format(dumps(meta)))
 
-    # Possible hooks
-    scripts = []
-    if branch and name:
-        scripts.append(join(hooks, '{event}-{name}-{branch}'.format(**meta)))
-    if name:
-        scripts.append(join(hooks, '{event}-{name}'.format(**meta)))
-    scripts.append(join(hooks, '{event}'.format(**meta)))
-    scripts.append(join(hooks, 'all'))
-
-    # Check permissions
-    scripts = [s for s in scripts if isfile(s) and access(s, X_OK)]
-    if not scripts:
-        return ''
-
     # Save payload to temporal file
     osfd, tmpfile = mkstemp()
     with fdopen(osfd, 'w') as pf:
         pf.write(dumps(payload))
 
-    # Run scripts
-    ran = {}
-    for s in scripts:
-
-        proc = Popen(
-            [s, tmpfile, event],
-            stdout=PIPE, stderr=PIPE
-        )
-        stdout, stderr = proc.communicate()
-
-        ran[basename(s)] = {
-            'returncode': proc.returncode,
-            'stdout': stdout,
-            'stderr': stderr,
-        }
-
-        # Log errors if a hook failed
-        if proc.returncode != 0:
-            logging.error('{} : {} \n{}'.format(
-                s, proc.returncode, stderr
-            ))
+    # Use HooksHub to run actions
+    listener = HookListener(tmpfile, event)
+    code, output = listener.run_event_actions()
 
     # Remove temporal file
     remove(tmpfile)
 
-    info = config.get('return_scripts_info', False)
-    if not info:
-        return ''
+    if code != 0:   # Error executing actions
+        output = 'Fail with {0}:{1}\n{2}'.format(event, name, output)
+    else:           # All ok
+        output = 'Success with {0}:{1}\n{2}'.format(event, name, output)
 
-    output = dumps(ran, sort_keys=True, indent=4)
     logging.info(output)
     return output
 
