@@ -30,6 +30,7 @@ from os.path import isfile, abspath, normpath, dirname, join, basename
 import requests
 from ipaddress import ip_address, ip_network
 from flask import Flask, request, abort
+from hookshub.listener import HookListener
 
 
 application = Flask(__name__)
@@ -40,7 +41,6 @@ def index():
     """
     Main WSGI application entry.
     """
-
     path = normpath(abspath(dirname(__file__)))
 
     # Only POST is implemented
@@ -93,7 +93,11 @@ def index():
                 abort(403)
 
     # Implement ping
-    event = request.headers.get('X-GitHub-Event', 'ping')
+    event = request.headers.get(
+        'X-GitHub-Event', request.headers.get(
+            'X-GitLab-Event', 'ping'
+        )
+    )
     if event == 'ping':
         return dumps({'msg': 'pong'})
 
