@@ -1,4 +1,4 @@
 Flask
 ipaddress
 requests
-git@github.com:gisce/github-hooks.git
+git@github.com:gisce/hookshub.git
