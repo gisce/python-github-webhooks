@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from __future__ import print_function
 import logging
 from sys import stderr, hexversion
 logging.basicConfig(stream=stderr)
@@ -163,7 +164,8 @@ def index():
         output = 'Success with {0}:{1}\n{2}'.format(event, name, output)
 
     logging.info(output)
-    return output
+    print(output)
+    return dumps({'msg': output})
 
 
 if __name__ == '__main__':
