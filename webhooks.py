@@ -153,6 +153,9 @@ def index():
     # Use HooksHub to run actions
     listener = HookListener(tmpfile, event)
     hooks_conf = join(path, 'hookshub_conf.json')
+
+    print('Processing: {}...'.format(listener.event))
+
     code, output = listener.run_event_actions(hooks_conf)
 
     # Remove temporal file
