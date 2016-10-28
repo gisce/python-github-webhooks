@@ -167,7 +167,8 @@ def index():
         output = 'Success with {0}:{1}\n{2}'.format(event, name, output)
 
     logging.info(output)
-    print(output)
+    log_out = output.replace('|', '\n')
+    print(log_out)
     return dumps({'msg': output})
 
 
