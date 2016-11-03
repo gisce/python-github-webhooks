@@ -163,6 +163,9 @@ def index():
 
     if code != 0:   # Error executing actions
         output = 'Fail with {0}:{1}\n{2}'.format(event, name, output)
+        log_out = output.replace('|', '\n')
+        print(log_out)
+        abort(500)
     else:           # All ok
         output = 'Success with {0}:{1}\n{2}'.format(event, name, output)
 
