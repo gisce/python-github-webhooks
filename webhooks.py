@@ -141,7 +141,7 @@ def index():
         'branch': branch,
         'event': event
     }
-    logging.info('Metadata:\n{}'.format(dumps(meta)))
+    application.logger.info('Metadata:\n{}'.format(dumps(meta)))
 
     # Save payload to temporal file
     osfd, tmpfile = mkstemp()
@@ -167,7 +167,7 @@ def index():
     else:           # All ok
         output = 'Success with {0}:{1}\n{2}'.format(event, name, output)
 
-    logging.info(output)
+    application.logger.info(output)
     log_out = output.replace('|', '\n')
     print(log_out)
     return dumps({'msg': output})
