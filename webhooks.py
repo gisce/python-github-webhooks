@@ -152,24 +152,24 @@ def index():
     listener = HookListener(tmpfile, event)
     hooks_conf = join(path, 'hookshub_conf.json')
 
-    print('Processing: {}...'.format(listener.event))
+    log_out = ('Processing: {}...'.format(listener.event))
 
     code, output = listener.run_event_actions(hooks_conf)
 
+    output = '{0}|{1}'.format(log_out, output)
     # Remove temporal file
     remove(tmpfile)
 
     if code != 0:   # Error executing actions
         output = 'Fail with {0}:{1}\n{2}'.format(event, name, output)
         log_out = output.replace('|', '\n')
-        print(log_out)
+        application.logger.info(log_out)
         abort(500)
     else:           # All ok
         output = 'Success with {0}:{1}\n{2}'.format(event, name, output)
 
-    application.logger.info(output)
     log_out = output.replace('|', '\n')
-    print(log_out)
+    application.logger.info(log_out)
     return dumps({'msg': output})
 
 
