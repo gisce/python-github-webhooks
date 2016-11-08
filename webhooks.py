@@ -18,12 +18,10 @@
 from __future__ import print_function
 import logging
 from sys import stderr, hexversion
-logging.basicConfig(stream=stderr)
 
 import hmac
 from hashlib import sha1
 from json import loads, dumps
-from subprocess import Popen, PIPE
 from tempfile import mkstemp
 from os import access, X_OK, remove, fdopen
 from os.path import isfile, abspath, normpath, dirname, join, basename
