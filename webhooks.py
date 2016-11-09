@@ -28,11 +28,26 @@ from os.path import isfile, abspath, normpath, dirname, join, basename
 
 import requests
 from ipaddress import ip_address, ip_network
-from flask import Flask, request, abort
+from flask import Flask, request, abort, jsonify
 from hookshub.listener import HookListener
 
 
+class AbortException(Exception):
+    def __init__(self, msg):
+        msg = 'Internal Server Error\n{}'.format(msg)
+        self.message = msg
+        self.code = 500
+
+
 application = Flask(__name__)
+
+
+@application.errorhandler(AbortException)
+def handle_abort(e):
+    response = jsonify(e.message)
+    response.content_type = 'text/html'
+    response.status_code = e.code
+    return response
 
 
 @application.route('/', methods=['GET', 'POST'])
@@ -162,14 +177,9 @@ def index():
 
     if code != 0:   # Error executing actions
         output = 'Fail with {0}:{1}\n{2}'.format(event, name, output)
-        log_out = output.replace('|', '\n')
-        application.logger.info(log_out)
-        abort(500)
+        raise AbortException(output)
     else:           # All ok
         output = 'Success with {0}:{1}\n{2}'.format(event, name, output)
-
-    log_out = output.replace('|', '\n')
-    application.logger.info(log_out)
     return dumps({'msg': output})
 
 
