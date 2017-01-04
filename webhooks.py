@@ -184,4 +184,6 @@ def index():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(asctime)s %(message)s',
+                        datefmt='[%Y/%m/%d-%H:%M:%S]')
     application.run(debug=True, host='0.0.0.0')
